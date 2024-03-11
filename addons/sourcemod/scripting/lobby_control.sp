@@ -17,6 +17,15 @@ public Plugin myinfo = {
 char g_sReservation[20];
 
 
+ConVar g_cvAllowLobbyConnectOnly = null; /*< sv_allow_lobby_connect_only */
+
+/**
+ *
+ */
+public void OnPluginStart() {
+	g_cvAllowLobbyConnectOnly = FindConVar("sv_allow_lobby_connect_only");
+}
+
 /**
  * Called before OnPluginStart.
  *
@@ -70,6 +79,8 @@ int Native_RestoreLobbyReservation(Handle plugin, int numParams)
 
 	L4D_SetLobbyReservation(g_sReservation);
 
+	SetConVarInt(g_cvAllowLobbyConnectOnly, 1);
+
 	g_sReservation[0] = '\0';
 
 	return 1;
@@ -84,6 +95,8 @@ int Native_DeleteLobbyReservation(Handle plugin, int numParams)
 	L4D_GetLobbyReservation(g_sReservation, sizeof(g_sReservation));
 
 	L4D_LobbyUnreserve();
+
+	SetConVarInt(g_cvAllowLobbyConnectOnly, 0);
 
 	return 1;
 }
