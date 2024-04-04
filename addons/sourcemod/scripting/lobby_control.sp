@@ -17,12 +17,18 @@ public Plugin myinfo = {
 char g_sReservation[20];
 
 
-ConVar g_cvAllowLobbyConnectOnly = null; /*< sv_allow_lobby_connect_only */
+ConVar
+	g_cvAutoLobbyRemove = null, /*< sm_auto_lobby_remove */
+	g_cvAllowLobbyConnectOnly = null /*< sv_allow_lobby_connect_only */
+; 
 
 /**
  *
  */
-public void OnPluginStart() {
+public void OnPluginStart()
+{
+	g_cvAutoLobbyRemove = CreateConVar("sm_auto_lobby_remove", "0", "Automatically delete lobbies", _, true, 0.0, true, 1.0);
+
 	g_cvAllowLobbyConnectOnly = FindConVar("sv_allow_lobby_connect_only");
 }
 
@@ -52,6 +58,13 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] sErr, int iErrLen
 	RegPluginLibrary("lobby_control");
 
 	return APLRes_Success;
+}
+
+public void OnConfigsExecuted()
+{
+	if (GetConVarBool(g_cvAutoLobbyRemove) && DeleteLobbyReservation() == 0) {
+		SetConVarInt(g_cvAllowLobbyConnectOnly, 0);
+	}
 }
 
 int Native_IsLobbyReserved(Handle plugin, int numParams)
@@ -86,7 +99,15 @@ int Native_RestoreLobbyReservation(Handle plugin, int numParams)
 	return 1;
 }
 
-int Native_DeleteLobbyReservation(Handle plugin, int numParams)
+int Native_DeleteLobbyReservation(Handle plugin, int numParams) {
+	return DeleteLobbyReservation();
+}
+
+bool CanResoreLobby() {
+	return g_sReservation[0] != '\0';
+}
+
+int DeleteLobbyReservation()
 {
 	if (!L4D_LobbyIsReserved()) {
 		return 0;
@@ -99,8 +120,4 @@ int Native_DeleteLobbyReservation(Handle plugin, int numParams)
 	SetConVarInt(g_cvAllowLobbyConnectOnly, 0);
 
 	return 1;
-}
-
-bool CanResoreLobby() {
-	return g_sReservation[0] != '\0';
 }
