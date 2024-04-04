@@ -9,7 +9,7 @@ public Plugin myinfo = {
 	name = "LobbyControl",
 	author = "TouchMe",
 	description = "The plugin allows you to delete the lobby and restore it",
-	version = "build_0000",
+	version = "build_0001",
 	url = "https://github.com/TouchMe-Inc/l4d2_lobby_control"
 };
 
