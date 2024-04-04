@@ -62,7 +62,9 @@ public APLRes AskPluginLoad2(Handle myself, bool bLate, char[] sErr, int iErrLen
 
 public void OnConfigsExecuted()
 {
-	if (GetConVarBool(g_cvAutoLobbyRemove) && DeleteLobbyReservation() == 0) {
+	if (CanRestoreLobby()
+	|| (GetConVarBool(g_cvAutoLobbyRemove) && DeleteLobbyReservation() == 0)
+	) {
 		SetConVarInt(g_cvAllowLobbyConnectOnly, 0);
 	}
 }
@@ -73,7 +75,7 @@ int Native_IsLobbyReserved(Handle plugin, int numParams)
 		return 1;
 	}
 
-	if (!CanResoreLobby()) {
+	if (!CanRestoreLobby()) {
 		return -1;
 	}
 
@@ -86,7 +88,7 @@ int Native_RestoreLobbyReservation(Handle plugin, int numParams)
 		return 0;
 	}
 
-	if (!CanResoreLobby()) {
+	if (!CanRestoreLobby()) {
 		return -1;
 	}
 
@@ -103,7 +105,7 @@ int Native_DeleteLobbyReservation(Handle plugin, int numParams) {
 	return DeleteLobbyReservation();
 }
 
-bool CanResoreLobby() {
+bool CanRestoreLobby() {
 	return g_sReservation[0] != '\0';
 }
 
